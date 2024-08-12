@@ -44,7 +44,7 @@ jobs:
         # TODO: add back 'windows-latest' when it can be compiled.
         os: ['macos-14', 'macos-12', 'ubuntu-20.04']
         py-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
-        tf-version: ['2.11.0', '2.15.1']
+        tf-version: ['2.11.0', '2.15.1', '2.16.0']
         tf-need-cuda: ['0']
         cpu: ['x86', 'arm64']
         exclude:
@@ -123,7 +123,7 @@ jobs:
         # TODO: add back 'windows-latest' when it can be compiled.
         os: ['ubuntu-20.04']
         py-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
-        tf-version: ['2.11.0', '2.15.1']
+        tf-version: ['2.11.0', '2.15.1', '2.16.0']
         tf-need-cuda: ['1']
         cpu: ['x86']
         exclude:
@@ -132,6 +132,10 @@ jobs:
           - tf-version: '2.15.1'
             py-version: '3.7'
           - tf-version: '2.15.1'
+            py-version: '3.8'
+          - tf-version: '2.16.0'
+            py-version: '3.7'
+          - tf-version: '2.16.0'
             py-version: '3.8'
       fail-fast: false
     runs-on: [self-hosted, Linux, X64]
@@ -192,7 +196,7 @@ jobs:
         # TODO: add back 'Windows' when it can be compiled.
         os: ['macOS', 'Linux']
         py-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
-        tf-version: ['2.15.1']
+        tf-version: ['2.15.1', '2.16.0']
         tf-need-cuda: ['0', '1']
         cpu: ['x86', 'arm64']
         exclude:
@@ -204,6 +208,10 @@ jobs:
           - tf-version: '2.15.1'
             py-version: '3.7'
           - tf-version: '2.15.1'
+            py-version: '3.8'
+          - tf-version: '2.16.0'
+            py-version: '3.7'
+          - tf-version: '2.16.0'
             py-version: '3.8'
           - os: 'Linux'
             cpu: 'arm64'
