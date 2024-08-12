@@ -197,6 +197,7 @@ jobs:
         cpu: ['x86', 'arm64']
         exclude:
           # excludes cuda on macOS
+          # test
           - os: 'macOS'
             tf-need-cuda: '1'
           - tf-version: '2.11.0'
