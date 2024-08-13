@@ -77,7 +77,7 @@ jobs:
           script: |
             const commit_details = await github.git.getCommit({owner: context.repo.owner, repo: context.repo.repo, commit_sha: context.sha});
             return commit_details.data.author.date
-      - if: matrix.tf-version != '2.15.1'
+      - if: matrix.tf-version == '2.11.0'
         shell: bash
         run: echo "SKIP_CUSTOM_OP_TESTS=--skip-custom-ops" >> $GITHUB_ENV
       - if: github.event_name == 'push'
@@ -149,7 +149,7 @@ jobs:
   #         script: |
   #           const commit_details = await github.git.getCommit({owner: context.repo.owner, repo: context.repo.repo, commit_sha: context.sha});
   #           return commit_details.data.author.date
-  #     - if: matrix.tf-version != '2.15.1'
+  #     - if: matrix.tf-version == '2.11.0'
   #       shell: bash
   #       run: echo "SKIP_CUSTOM_OP_TESTS=--skip-custom-ops" >> $GITHUB_ENV
   #     - if: github.event_name == 'push'
