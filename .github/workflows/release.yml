@@ -119,81 +119,81 @@ jobs:
         with:
           name: ${{ runner.os }}-${{ matrix.py-version }}-tf${{ matrix.tf-version }}-${{ steps.device.outputs.value }}-${{ matrix.cpu }}-wheel
           path: wheelhouse
-  release-wheel-gpu:
-    name: Build release wheels for GPU
-    needs: [release-wheel-cpu, test-with-bazel]
-    strategy:
-      matrix:
-        # TODO: add back 'windows-latest' when it can be compiled.
-        os: ['ubuntu-20.04']
-        py-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
-        tf-version: ['2.11.0', '2.15.1', '2.16.2']
-        tf-need-cuda: ['1']
-        cpu: ['x86']
-        exclude:
-          - tf-version: '2.11.0'
-            py-version: '3.11'
-          - tf-version: '2.15.1'
-            py-version: '3.7'
-          - tf-version: '2.15.1'
-            py-version: '3.8'
-          - tf-version: '2.16.2'
-            py-version: '3.7'
-          - tf-version: '2.16.2'
-            py-version: '3.8'
-      fail-fast: false
-    runs-on: [self-hosted, Linux, X64]
-    steps:
-      - name: clear cache folder
-        run: rm -rf /usr/share/dotnet /opt/ghc "/usr/local/share/boost"
-      - uses: actions/github-script@0.3.0
-        id: author-date
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const commit_details = await github.git.getCommit({owner: context.repo.owner, repo: context.repo.repo, commit_sha: context.sha});
-            return commit_details.data.author.date
-      - if: matrix.tf-version != '2.15.1'
-        shell: bash
-        run: echo "SKIP_CUSTOM_OP_TESTS=--skip-custom-ops" >> $GITHUB_ENV
-      - if: github.event_name == 'push'
-        shell: bash
-        run: echo "NIGHTLY_FLAG=--nightly" >> $GITHUB_ENV
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.py-version }}
-      - name: Setup Bazel
-        # Ubuntu bazel is run inside of the docker image
-        if: matrix.os != 'ubuntu-20.04'
-        run: bash tools/install_deps/install_bazelisk.sh ./
-      - name: Build wheels
-        env:
-          OS: ${{ runner.os }}
-          PY_VERSION: ${{ matrix.py-version }}
-          TF_VERSION: ${{ matrix.tf-version }}
-          TF_NEED_CUDA: ${{ matrix.tf-need-cuda }}
-          NIGHTLY_TIME: ${{ steps.author-date.outputs.result }}
-          CPU: ${{ matrix.cpu }}
-        shell: bash
-        run: |
-          if [[ "$TF_VERSION" =~ ^2\.(11|12|13|14|15)\.[0-9]$ ]] ; then
-            export HOROVOD_VERSION="0.28.1"
-          fi
-          bash .github/workflows/make_wheel_${OS}_${CPU}.sh
-      - uses: haya14busa/action-cond@v1
-        id: device
-        with:
-          cond: ${{ matrix.tf-need-cuda == '1' }}
-          if_true: "gpu"
-          if_false: "cpu"
-      - uses: actions/upload-artifact@v1
-        with:
-          name: ${{ runner.os }}-${{ matrix.py-version }}-tf${{ matrix.tf-version }}-${{ steps.device.outputs.value }}-${{ matrix.cpu }}-wheel
-          path: wheelhouse
+  # release-wheel-gpu:
+  #   name: Build release wheels for GPU
+  #   needs: [release-wheel-cpu, test-with-bazel]
+  #   strategy:
+  #     matrix:
+  #       # TODO: add back 'windows-latest' when it can be compiled.
+  #       os: ['ubuntu-20.04']
+  #       py-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+  #       tf-version: ['2.11.0', '2.15.1', '2.16.2']
+  #       tf-need-cuda: ['1']
+  #       cpu: ['x86']
+  #       exclude:
+  #         - tf-version: '2.11.0'
+  #           py-version: '3.11'
+  #         - tf-version: '2.15.1'
+  #           py-version: '3.7'
+  #         - tf-version: '2.15.1'
+  #           py-version: '3.8'
+  #         - tf-version: '2.16.2'
+  #           py-version: '3.7'
+  #         - tf-version: '2.16.2'
+  #           py-version: '3.8'
+  #     fail-fast: false
+  #   runs-on: [self-hosted, Linux, X64]
+  #   steps:
+  #     - name: clear cache folder
+  #       run: rm -rf /usr/share/dotnet /opt/ghc "/usr/local/share/boost"
+  #     - uses: actions/github-script@0.3.0
+  #       id: author-date
+  #       with:
+  #         github-token: ${{secrets.GITHUB_TOKEN}}
+  #         script: |
+  #           const commit_details = await github.git.getCommit({owner: context.repo.owner, repo: context.repo.repo, commit_sha: context.sha});
+  #           return commit_details.data.author.date
+  #     - if: matrix.tf-version != '2.15.1'
+  #       shell: bash
+  #       run: echo "SKIP_CUSTOM_OP_TESTS=--skip-custom-ops" >> $GITHUB_ENV
+  #     - if: github.event_name == 'push'
+  #       shell: bash
+  #       run: echo "NIGHTLY_FLAG=--nightly" >> $GITHUB_ENV
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: ${{ matrix.py-version }}
+  #     - name: Setup Bazel
+  #       # Ubuntu bazel is run inside of the docker image
+  #       if: matrix.os != 'ubuntu-20.04'
+  #       run: bash tools/install_deps/install_bazelisk.sh ./
+  #     - name: Build wheels
+  #       env:
+  #         OS: ${{ runner.os }}
+  #         PY_VERSION: ${{ matrix.py-version }}
+  #         TF_VERSION: ${{ matrix.tf-version }}
+  #         TF_NEED_CUDA: ${{ matrix.tf-need-cuda }}
+  #         NIGHTLY_TIME: ${{ steps.author-date.outputs.result }}
+  #         CPU: ${{ matrix.cpu }}
+  #       shell: bash
+  #       run: |
+  #         if [[ "$TF_VERSION" =~ ^2\.(11|12|13|14|15)\.[0-9]$ ]] ; then
+  #           export HOROVOD_VERSION="0.28.1"
+  #         fi
+  #         bash .github/workflows/make_wheel_${OS}_${CPU}.sh
+  #     - uses: haya14busa/action-cond@v1
+  #       id: device
+  #       with:
+  #         cond: ${{ matrix.tf-need-cuda == '1' }}
+  #         if_true: "gpu"
+  #         if_false: "cpu"
+  #     - uses: actions/upload-artifact@v1
+  #       with:
+  #         name: ${{ runner.os }}-${{ matrix.py-version }}-tf${{ matrix.tf-version }}-${{ steps.device.outputs.value }}-${{ matrix.cpu }}-wheel
+  #         path: wheelhouse
   upload-wheels:
     name: Publish wheels to PyPi
-    needs: [release-wheel-gpu]
+    # needs: [release-wheel-gpu]
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -248,7 +248,8 @@ jobs:
           password: ${{ secrets.PYPI_API_TOKEN }}
   upload-dev-container:
     name: Upload dev container to DockerHub
-    needs: [release-wheel-gpu, test-with-bazel]
+    # needs: [release-wheel-gpu, test-with-bazel]
+    needs: [test-with-bazel]
     runs-on: ubuntu-20.04
     strategy:
       matrix:
