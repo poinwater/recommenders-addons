@@ -18,6 +18,7 @@ env:
   MIN_PY_VERSION: '3.7'
   MAX_PY_VERSION: '3.11'
   HOROVOD_VERSION: '0.28.1'
+  TF_USE_LEGACY_KERAS: True
 
 jobs:
   test-with-bazel:

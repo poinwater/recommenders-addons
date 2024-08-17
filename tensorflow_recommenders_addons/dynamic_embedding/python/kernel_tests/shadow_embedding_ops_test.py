@@ -48,9 +48,9 @@ from tensorflow_recommenders_addons.dynamic_embedding.python.ops.shadow_embeddin
 from tensorflow_recommenders_addons.utils.check_platform import is_macos, is_arm64
 
 try:
-  from tensorflow.keras.legacy.optimizers import Adam
+  from tf_keras.legacy.optimizers import Adam
 except:
-  from tensorflow.keras.optimizers import Adam
+  from tf_keras.optimizers import Adam
 
 
 def _get_sparse_variable(name,
